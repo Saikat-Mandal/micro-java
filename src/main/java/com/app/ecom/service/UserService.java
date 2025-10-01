@@ -1,6 +1,7 @@
 package com.app.ecom.service;
 
 import com.app.ecom.dto.AddressDTO;
+import com.app.ecom.dto.UserRequest;
 import com.app.ecom.dto.UserResponse;
 import com.app.ecom.model.Address;
 import com.app.ecom.model.User;
@@ -23,22 +24,22 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public User createUser(User user){
-        return userRepository.save(user);
+    public void createUser(UserRequest userRequest){
+        User user = new User();
+        updateUserFromRequest(user , userRequest);
+        userRepository.save(user);
     }
 
     public User getUserById(Long id){
         return userRepository.findById(id).orElse(null);
     }
 
-    public User updateUser(User user ,Long userId) {
+    public void updateUser(UserRequest userRequest ,Long userId) {
         User userToUpdate = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        userToUpdate.setFirstName(user.getFirstName());
-        userToUpdate.setLastName(user.getLastName());
-
-        return userRepository.save(userToUpdate);
+        updateUserFromRequest(userToUpdate, userRequest);
+        userRepository.save(userToUpdate);
     }
 
     private UserResponse mapToUserUserResponse(User user){
@@ -60,5 +61,23 @@ public class UserService {
             userResponse.setAddressDTO(addressDTO);
         }
         return userResponse;
+    }
+
+    private void updateUserFromRequest( User user, UserRequest userRequest){
+        System.out.println(userRequest.getAddress());
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setEmail(userRequest.getEmail());
+        user.setPhone(userRequest.getPhone());
+
+        if(userRequest.getAddress() != null){
+            Address address = new Address();
+            address.setStreet(userRequest.getAddress().getStreet());
+            address.setCity(userRequest.getAddress().getCity());
+            address.setState(userRequest.getAddress().getState());
+            address.setCountry(userRequest.getAddress().getCountry());
+            address.setZipcode(userRequest.getAddress().getZipcode());
+            user.setAddress(address);
+        }
     }
 }
