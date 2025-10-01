@@ -1,5 +1,6 @@
 package com.app.ecom.controller;
 
+import com.app.ecom.dto.UserResponse;
 import com.app.ecom.model.User;
 import com.app.ecom.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    ResponseEntity<List<User>> getAllUsers(){
+    ResponseEntity<List<UserResponse>> getAllUsers(){
         return new ResponseEntity<>(userService.getAllUsers(),HttpStatus.OK);
     }
 
