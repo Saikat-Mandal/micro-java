@@ -33,9 +33,19 @@ public class ProductController {
                         .body("Product not found with id " + productId));
     }
 
-
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return new ResponseEntity<>(productService.getAllProducts() , HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
+        return new ResponseEntity<>("Product deleted successfully" ,HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponse>> searchProduct(@RequestParam String keyword) {
+        return new ResponseEntity<>(productService.searchProduct(keyword), HttpStatus.OK);
     }
 }

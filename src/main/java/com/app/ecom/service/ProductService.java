@@ -1,5 +1,6 @@
 package com.app.ecom.service;
 
+import com.app.ecom.Exception.ResourceNotFoundException;
 import com.app.ecom.dto.ProductRequest;
 import com.app.ecom.dto.ProductResponse;
 import com.app.ecom.model.Product;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +27,19 @@ public class ProductService {
     }
 
     public List<ProductResponse> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findByActiveTrue();
         List<ProductResponse> productResponses = new ArrayList<>();
         for (Product product : products) {
             productResponses.add(mapToProductResponse(product));
         }
         return productResponses;
+    }
+
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()->new ResourceNotFoundException("Product not found"));
+        product.setActive(false);
+        productRepository.save(product);
     }
 
     public Optional<ProductResponse> updateProduct(ProductRequest productRequest, Long productId) {
@@ -43,7 +52,6 @@ public class ProductService {
         }
         return Optional.empty();
     }
-
 
     public void updateProductFromRequest(Product product , ProductRequest productRequest) {
         product.setName(productRequest.getName());
@@ -66,6 +74,10 @@ public class ProductService {
         return productResponse;
     }
 
-
-
+    public List<ProductResponse> searchProduct(String keyword) {
+        return productRepository.searchProduct(keyword)
+                .stream()
+                .map(this::mapToProductResponse)
+                .toList();
+    }
 }
