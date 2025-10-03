@@ -9,14 +9,16 @@ import com.app.ecom.model.User;
 import com.app.ecom.repository.CartItemRepository;
 import com.app.ecom.repository.ProductRepository;
 import com.app.ecom.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CartService {
 
     private final ProductRepository productRepository;
@@ -58,4 +60,24 @@ public class CartService {
         }
     }
 
+    public void deleteFromCart(String userId, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        if (!product.getActive()) {
+            throw new ResourceNotFoundException("Product not found");
+        }
+
+        User user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        cartItemRepository.deleteByUserAndProduct(user, product);
+
+    }
+
+    public List<CartItem> getCartForUser(String userId) {
+        User user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return cartItemRepository.findByUser(user);
+    }
 }
