@@ -80,4 +80,9 @@ public class CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return cartItemRepository.findByUser(user);
     }
+
+    public void clearCart(String userId) {
+        User user =  userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        cartItemRepository.deleteByUser(user);
+    }
 }
