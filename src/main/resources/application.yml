@@ -3,8 +3,8 @@ spring:
     name: ecom
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/microDb
-    username: postgres
+    url: jdbc:postgresql://localhost:5432/ecomDb
+    username: admin
     password: admin
 
   jpa:
@@ -13,6 +13,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    database: POSTGRESQL
+    show-sql: true
 management:
   endpoints:
     web:
